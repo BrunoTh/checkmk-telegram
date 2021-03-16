@@ -30,18 +30,11 @@
 		"ms-python.python"
 	],
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [5000],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "pip3 install --user -r requirements.txt",
+	"appPort": [5000],
 
 	// This is a dirty hack. The build routine of Dev Container removes the entrypoint from the original image which initializes the cmk site.
 	// That's why we're calling it here. But before we can do this we have to remove the "wait" command at the end of the script. Otherwise
 	// the Configuration step never finishes.
 	// TODO: install pylint
 	"postCreateCommand": "sed -i '/^wait$/d' /docker-entrypoint.sh && /docker-entrypoint.sh",
-
-	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	// "remoteUser": "cmk"
 }
