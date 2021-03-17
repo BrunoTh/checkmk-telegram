@@ -8,20 +8,41 @@ import sys
 import json
 from pathlib import Path
 import cmk.utils.paths
+import re
 
 TELEGRAM_BOT_URL = "https://api.telegram.org"
 PERSISTENT_DATA_PATH = Path(cmk.utils.paths.local_notifications_dir, "telegram_db.json")
 
 
+def escape_markdown(raw_text):
+    return re.sub(r"([_*\[\]()~`>#+\-=|{}.!\\])", r"\\\1", raw_text)
+
 def render_message_markdown():
-    return ""
+    notify_what = os.environ.get("NOTIFY_WHAT")  # HOST or SERVICE
+    notify_shortdatetime = os.environ.get("NOTIFY_SHORTDATETIME")
+    notify_hostname = os.environ.get("NOTIFY_HOSTNAME")
+    notify_hoststate = os.environ.get("NOTIFY_HOSTSTATE")
+    notify_notificationtype = os.environ.get("NOTIFY_NOTIFICATIONTYPE")
+    notify_servicedesc = os.environ.get("NOTIFY_SERVICEDESC")
+    notify_servicestate = os.environ.get("NOTIFY_SERVICESTATE")
+    notify_serviceoutput = os.environ.get("NOTIFY_SERVICEOUTPUT")
+
+    text = f"{notify_hostname}: {notify_notificationtype}\n"
+
+    if notify_what == "HOST":
+        text += f"Host is {notify_hoststate}"
+    else:
+        text += f"Service `{notify_servicedesc}` is {notify_servicestate}\n"
+        text += f"_{escape_markdown(notify_serviceoutput)}_"
+
+    return text
 
 
 def send_notification(bot_token: str, chat_id: Union[int, str]):
     bot_params = {
         "chat_id": chat_id,
         "parse_mode": "MarkdownV2",
-        "text": "ALARM",  # TODO: Escape special characters like !
+        "text": render_message_markdown(),  # TODO: Escape special characters like !
     }
     response = requests.get(f"{TELEGRAM_BOT_URL}/bot{bot_token}/sendMessage", params=bot_params)
 
