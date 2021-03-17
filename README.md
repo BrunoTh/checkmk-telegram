@@ -36,6 +36,8 @@ For the best development experience I recommend VSCode.
 
 The Docker container exposes the port 5000 to access the checkmk instance: http://localhost:5000/cmk
 
+If the instance is not accessible, check if it is running (`omd status` and `omd start cmk`)
+
 To log into the instance use the credentials:
 ```
 Username: cmkadmin
