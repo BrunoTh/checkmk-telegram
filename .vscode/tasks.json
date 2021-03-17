@@ -10,7 +10,12 @@
             "presentation": {
                 "reveal": "always",
                 "panel": "new"
-              }
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }
